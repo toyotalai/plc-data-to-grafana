@@ -1,0 +1,33 @@
+# ── 資料庫：測試資料，體積大，二進位檔 diff 沒有意義 ──
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ── Python ──
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# ── C# / .NET 建置產物 ──
+csharp/**/bin/
+csharp/**/obj/
+
+# ── OpenPLC Editor 建置產物（梯形圖原始檔要留，編譯結果不要）──
+build/
+*.so
+
+# ── 編輯器 ──
+.vscode/
+.idea/
+
+# ── Windows ──
+Thumbs.db
+desktop.ini
+
+# ── 備份檔：版控取代的就是這個 ──
+*.bak
+
+# 展示用資料，固定不變，讓別人 clone 之後能重現圖表
+!sample/readings_demo.db

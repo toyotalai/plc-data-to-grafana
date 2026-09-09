@@ -1,0 +1,11 @@
+{
+  "deviceBoard": "OpenPLC Runtime v4",
+  "communicationPort": "",
+  "runtimeIpAddress": "172.20.10.7",
+  "vendorScreenData": {},
+  "vendorScreenDataByBoard": {
+    "OpenPLC Simulator": {},
+    "OpenPLC Runtime v4": {}
+  },
+  "selectedPlatformOptions": {}
+}
