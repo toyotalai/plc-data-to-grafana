@@ -1,8 +1,13 @@
+import os
+
+HOST = os.environ.get('PLC_HOST', '127.0.0.1')
+PORT = int(os.environ.get('PLC_PORT', '5020'))
+
 import time
 
 from pymodbus.client import ModbusTcpClient
 
-client = ModbusTcpClient('127.0.0.1', port=5020, timeout=0.5)
+client = ModbusTcpClient(HOST, port=PORT, timeout=3)
 print('connect:', client.connect())
 
 for addr in (1, 100, 1024):

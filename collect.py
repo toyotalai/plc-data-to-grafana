@@ -2,14 +2,15 @@
 # 階段三只做一件事：把值誠實地存下來，包括失敗的那些。
 # 「誠實」是重點——不補值、不平滑、不跳過失敗。原始資料一旦被動過，之後就再也還原不回來了。
 
+import os
 import sqlite3
 import time
 
 from pymodbus.client import ModbusTcpClient
 
 DB_PATH  = r'D:\Projects\counter\readings.db'
-HOST     = '127.0.0.1'
-PORT     = 5020
+HOST = os.environ.get('PLC_HOST', '127.0.0.1')
+PORT = int(os.environ.get('PLC_PORT', '5020'))
 TAG      = 'counter_value'
 INTERVAL = 1.0
 

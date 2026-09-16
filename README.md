@@ -185,13 +185,52 @@
 
 ### Python
 
+**建虛擬環境、照 `requirements.txt` 安裝**（兩台機器都一樣，只有路徑寫法不同）：
+
 ```bash
-pip install pymodbus          # 實測 3.15.0
-python read_modbus.py         # 讀十筆
-python collect.py             # 常駐採集，Ctrl+C 停止
-python check.py               # 檢驗資料庫
-python set_limit.py 500       # 下命令：把計數上限改成 500
+# Windows
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+
+# Linux / 樹莓派
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
+
+**執行**（以 Linux 路徑為例，Windows 換成 `.venv\Scripts\python`）：
+
+```bash
+.venv/bin/python read_modbus.py      # 讀十筆
+.venv/bin/python collect.py          # 常駐採集，Ctrl+C 停止
+.venv/bin/python check.py            # 檢驗資料庫
+.venv/bin/python set_limit.py 500    # 下命令：把計數上限改成 500
+```
+
+> **寫完整路徑而不是先 `activate`**，是因為終點是 systemd——service 檔只能寫絕對路徑。現在就一致，部署時不會有落差。
+
+### 兩台機器的部署
+
+**PLC 與 gateway 不在同一台機器上時**，用環境變數指定 PLC 的位址：
+
+```bash
+export PLC_HOST=172.20.10.7      # PLC 那台的 IP
+export PLC_PORT=5020             # 可省略，預設就是 5020
+.venv/bin/python collect.py
+```
+
+**不設就是 `127.0.0.1`**——所以在 PLC 本機上什麼都不用設，行為跟單機時一模一樣。
+
+| | 角色 | 跑什麼 |
+|---|---|---|
+| Windows 筆電 | **PLC** | OpenPLC Runtime |
+| 樹莓派 | **Gateway** | 採集、SQLite、Grafana |
+
+> **gateway 不是 PLC。** 它是放在 PLC 旁邊、透過網路讀寫它的另一台電腦——所以 PLC 那一端是可替換的：換成實體 PLC 時，gateway 這邊一行都不用改。
+
+**跨機器時筆電端還要做兩件事**：
+
+1. **Windows 防火牆放行 TCP 5020**
+2. **確認該網路的類別不是 `Public`**——Windows 對 python 的封鎖規則預設只在 `Public` 生效，而 **Block 永遠贏過 Allow**。症狀是一個什麼都不說的 timeout
 
 ### C#
 
@@ -235,6 +274,7 @@ net stop Grafana && net start Grafana
 ├── probe.py / write_test.py          位址探測：哪些位址讀得到、寫得進去
 ├── set_limit.py                      下命令：寫入上限、讀回實際採用值
 ├── timer_test.py                     隔離測試：拿掉 Modbus 與 SQLite 的純計時迴圈
+├── requirements.txt                  Python 依賴（版本鎖定）
 ├── csharp/ModbusReader/Program.cs    C# 對照版，與 read_modbus.py 逐行等價
 ├── grafana/dashboard.json            儀表板定義（設定即程式碼）
 ├── sample/readings_demo.db           展示資料：10.42 小時、37,473 筆
@@ -450,7 +490,8 @@ Grafana 會把資料點壓到跟螢幕寬度差不多，也就是把幾十筆平
 | 項目 | 版本 |
 |---|---|
 | OpenPLC Editor / Runtime | 4.2.11 / 4.2.1 |
-| Python | pymodbus 3.15.0 |
+| Python | pymodbus 3.15.0（見 `requirements.txt`） |
+| Gateway 硬體 | Raspberry Pi 5 / 8GB，Raspberry Pi OS |
 | .NET SDK / NModbus | 10.0.400-preview / 3.0.83 |
 | Grafana / SQLite 外掛 | OSS 13.2.1 / frser-sqlite-datasource 4.0.6 |
 | OS | Windows 11 |
@@ -485,11 +526,11 @@ Grafana 會把資料點壓到跟螢幕寬度差不多，也就是把幾十筆平
 | SQLite 落地 + 完整性驗證 | ✅ |
 | Grafana 儀表板 | ✅ |
 | 雙向讀寫 + 命令範圍檢查 | ✅ |
-| **搬上樹莓派，跨越真實網路** | ⬜ 硬體待到貨 |
+| **搬上樹莓派，跨越真實網路** | 🔄 跨機器讀取已通，systemd 常駐與斷網測試進行中 |
 | **MQTT 上送雲端（Edge-to-Cloud）** | ⬜ |
 | **三層告警規則，跑在 edge 端** | ⬜ |
 
-**目前的雙向讀寫走 `127.0.0.1`，還沒真的跨過網路。** 那是下一階段的事。
+**2026-09-16 更新**：採集端已經搬到樹莓派，透過區網讀到筆電上的 PLC——**這條鏈路現在真的有兩台機器**。剩下 systemd 常駐、Grafana 搬家、斷網續傳測試。
 
 ---
 
