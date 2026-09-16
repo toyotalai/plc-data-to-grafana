@@ -1,7 +1,13 @@
+import os
+
+DB_PATH = os.environ.get(
+    'DB_PATH',
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'readings.db'))
+
 import datetime
 import sqlite3
 
-conn = sqlite3.connect(r'D:\Projects\counter\readings.db')
+conn = sqlite3.connect(DB_PATH)
 
 # ── 基本統計 ──
 mn, mx, cnt, ok, bad = conn.execute('''

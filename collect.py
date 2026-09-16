@@ -8,7 +8,11 @@ import time
 
 from pymodbus.client import ModbusTcpClient
 
-DB_PATH  = r'D:\Projects\counter\readings.db'
+# 沒設環境變數的話，永遠用「跟 collect.py 同一個資料夾」的 readings.db
+DB_PATH = os.environ.get(
+    'DB_PATH',
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'readings.db'))
+
 HOST = os.environ.get('PLC_HOST', '127.0.0.1')
 PORT = int(os.environ.get('PLC_PORT', '5020'))
 TAG      = 'counter_value'
