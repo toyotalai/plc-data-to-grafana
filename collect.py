@@ -31,7 +31,7 @@ conn.execute('CREATE INDEX IF NOT EXISTS idx_reading_tag_ts ON reading(tag, ts)'
 #建立複合索引（tag和ts），比較快找到元素
 conn.commit()  #提交變更
 
-client = ModbusTcpClient(HOST, port=PORT, timeout=0.5)  # 連線超時 0.5 秒
+client = ModbusTcpClient(HOST, port=PORT, timeout=0.8, retries=0)  # 連線超時
 #client.connect()
 if not client.connect():                                # 第 4 點
     print(f'cannot connect to {HOST}:{PORT}')
