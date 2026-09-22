@@ -31,3 +31,5 @@ desktop.ini
 
 # 展示用資料，固定不變，讓別人 clone 之後能重現圖表
 !sample/readings_demo.db
+# ── 帶日期的手動備份檔（例如 collect.py.bak_20260922）──
+*.bak_*
