@@ -72,13 +72,13 @@ try:
                 value, quality = 0.0, 0  # 讀取失敗，存 0.0 並標記品質為 0
                 print(f'{time.strftime("%H:%M:%S")}  MODBUS ERROR: {r!r}')
                 # !r：使用 Python 的 repr(r) 顯示方式，適合除錯。
-                client.connect()
+                client.close(); client.connect()  # 先關舊連線再重連：只呼叫 connect() 會直接回 True
             else:
                 value, quality = float(r.registers[0]), 1
         except Exception as e:  # noqa: BLE001 ← 採集程式不能因單次失敗而死
             value, quality = 0.0, 0
             print(f'{time.strftime("%H:%M:%S")}  READ FAILED: {e!r}')
-            client.connect()       # 試著重連
+            client.close(); client.connect()  # 先關舊連線再重連：只呼叫 connect() 會直接回 True
 
         t1 = time.monotonic()
 
