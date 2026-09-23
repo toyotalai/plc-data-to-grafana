@@ -3,21 +3,10 @@
   "kind": "Dashboard",
   "metadata": {
     "name": "adwrdwp",
-    "namespace": "default",
-    "uid": "c0755253-9158-42b3-9ba6-9bdcfa265e81",
-    "resourceVersion": "1788943036149019",
-    "generation": 8,
-    "creationTimestamp": "2026-09-08T07:54:27Z",
-    "labels": {
-      "grafana.app/deprecatedInternalID": "3058256181444608"
-    },
-    "annotations": {
-      "grafana.app/createdBy": "user:cfxm37aiailmoc",
-      "grafana.app/message": "儀表板 → 設定齒輪 → General → Timezone → Coordinated Universal Time",
-      "grafana.app/saved-from-ui": "Grafana v13.2.1 (56cd3e9288)",
-      "grafana.app/updatedBy": "user:cfxm37aiailmoc",
-      "grafana.app/updatedTimestamp": "2026-09-09T08:37:16Z"
-    }
+    "generation": 6,
+    "creationTimestamp": "2026-09-23T05:45:32Z",
+    "labels": {},
+    "annotations": {}
   },
   "spec": {
     "annotations": [
@@ -28,10 +17,10 @@
             "kind": "DataQuery",
             "group": "grafana",
             "version": "v0",
-            "datasource": {
-              "name": "-- Grafana --"
-            },
-            "spec": {}
+            "spec": {},
+            "labels": {
+              "grafana.app/export-label": "grafana-1"
+            }
           },
           "enable": true,
           "hide": true,
@@ -48,8 +37,8 @@
         "kind": "Panel",
         "spec": {
           "id": 1,
-          "title": "取樣間隔分布（10.42 小時 / 37,472 次取樣）",
-          "description": "每個間隔值出現的次數。雙峰：990ms 與 1006ms，中間 1001-1002ms 無資料。平均值 1000.8ms 僅出現 2 次。",
+          "title": "取樣間隔分布",
+          "description": "每一次取樣與前一次的間隔，依毫秒分組統計。看的是分布的形狀，不是平均值——平均值看不見雙峰。\n\n目前資料：readings_20260921_wired_acceptance.db（樹莓派 + 有線直連，2026-09-21，8.06 小時 / 29,022 筆 / 讀取失敗 0）",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -62,14 +51,15 @@
                       "kind": "DataQuery",
                       "group": "frser-sqlite-datasource",
                       "version": "v0",
-                      "datasource": {
-                        "name": "afxm4j7yzwlj4b"
-                      },
                       "spec": {
                         "queryText": "SELECT ROUND(gap * 1000) AS ms, COUNT(*) AS n FROM (\n  SELECT ts - LAG(ts) OVER (ORDER BY ts) AS gap FROM reading\n) WHERE gap IS NOT NULL\nGROUP BY ms ORDER BY ms",
                         "queryType": "table",
                         "rawQueryText": "SELECT ROUND(gap * 1000) AS ms, COUNT(*) AS n FROM (\n  SELECT ts - LAG(ts) OVER (ORDER BY ts) AS gap FROM reading\n) WHERE gap IS NOT NULL\nGROUP BY ms ORDER BY ms",
                         "timeColumns": []
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "frser-sqlite-datasource-1",
+                        "grafana.app/export-datasource-name": "frser-sqlite-datasource"
                       }
                     },
                     "refId": "A",
@@ -86,7 +76,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "barchart",
-            "version": "13.2.1",
+            "version": "13.2.2",
             "spec": {
               "options": {
                 "barRadius": 0,
@@ -173,8 +163,8 @@
         "kind": "Panel",
         "spec": {
           "id": 2,
-          "title": "取樣間隔隨時間變化（10.42 小時）",
-          "description": "每一次取樣與前一次的間隔，單位毫秒。兩個族群 990ms / 1006ms 全程並存，相距 16ms，中間無資料。成因未解，已排除迴圈節奏、time.sleep、時鐘解析度、系統排程 tick。",
+          "title": "取樣間隔隨時間變化",
+          "description": "取樣間隔隨時間的變化。用來看抖動有沒有隨時間漂移，以及有沒有離群的尖峰。\n\n目前資料：readings_20260921_wired_acceptance.db（樹莓派 + 有線直連，2026-09-21，8.06 小時 / 29,022 筆 / 讀取失敗 0）",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -187,17 +177,18 @@
                       "kind": "DataQuery",
                       "group": "frser-sqlite-datasource",
                       "version": "v0",
-                      "datasource": {
-                        "name": "afxm4j7yzwlj4b"
-                      },
                       "spec": {
                         "queryText": "SELECT time, gap FROM (\n  SELECT ts AS time,\n         (ts - LAG(ts) OVER (ORDER BY ts)) * 1000 AS gap\n  FROM reading\n) WHERE gap IS NOT NULL\nORDER BY time",
-                        "queryType": "time series",
+                        "queryType": "table",
                         "rawQueryText": "SELECT time, gap FROM (\n  SELECT ts AS time,\n         (ts - LAG(ts) OVER (ORDER BY ts)) * 1000 AS gap\n  FROM reading\n) WHERE gap IS NOT NULL\nORDER BY time",
                         "timeColumns": [
                           "time",
                           "ts"
                         ]
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "frser-sqlite-datasource-1",
+                        "grafana.app/export-datasource-name": "frser-sqlite-datasource"
                       }
                     },
                     "refId": "A",
@@ -214,7 +205,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "timeseries",
-            "version": "13.2.1",
+            "version": "13.2.2",
             "spec": {
               "options": {
                 "legend": {
@@ -328,9 +319,9 @@
     "preload": false,
     "tags": [],
     "timeSettings": {
-      "timezone": "utc",
-      "from": "2026-09-07T12:00:00.000Z",
-      "to": "2026-09-08T00:00:00.000Z",
+      "timezone": "browser",
+      "from": "2026-09-21T03:00:00.000Z",
+      "to": "2026-09-21T12:00:00.000Z",
       "autoRefresh": "",
       "autoRefreshIntervals": [
         "5s",
