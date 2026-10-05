@@ -1,0 +1,19 @@
+[Unit]
+Description=MQTT uploader (SQLite -> Mosquitto, store-and-forward)
+After=network-online.target collect.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=inform
+WorkingDirectory=/home/inform/plc-data-to-grafana
+Environment=PYTHONUNBUFFERED=1
+Environment=DB_PATH=/var/lib/plc-gateway/current.db
+ExecStart=/home/inform/plc-data-to-grafana/.venv/bin/python /home/inform/plc-data-to-grafana/uploader.py
+UMask=0027
+Restart=always
+RestartSec=5
+SyslogIdentifier=uploader
+
+[Install]
+WantedBy=multi-user.target

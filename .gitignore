@@ -33,3 +33,7 @@ desktop.ini
 !sample/readings_demo.db
 # ── 帶日期的手動備份檔（例如 collect.py.bak_20260922）──
 *.bak_*
+
+# ── 執行時的 log 與診斷工具輸出：機器吐的，結論已寫進 README 與實作紀錄 ──
+log_*.txt
+netprobe/

@@ -1,5 +1,5 @@
 [Unit]
-Description=PLC data collector (Modbus TCP -> SQLite)
+Description=PLC data collector (Modbus TCP + RTU -> SQLite)
 After=network-online.target
 Wants=network-online.target
 
@@ -7,11 +7,9 @@ Wants=network-online.target
 Type=simple
 User=inform
 WorkingDirectory=/home/inform/plc-data-to-grafana
-Environment=PLC_HOST=192.168.50.1
-Environment=PLC_PORT=5020
 Environment=PYTHONUNBUFFERED=1
 Environment=DATA_DIR=/var/lib/plc-gateway
-ExecStart=/bin/bash -c 'ts=$(date +%%Y%%m%%d_%%H%%M%%S); exec env DB_PATH="$DATA_DIR/readings_$ts.db" /home/inform/plc-data-to-grafana/.venv/bin/python collect.py >> "$DATA_DIR/log_$ts.txt" 2>&1'
+ExecStart=/bin/bash -c 'ts=$(date +%%Y%%m%%d_%%H%%M%%S); db="$DATA_DIR/readings_$ts.db"; ln -sfn "$db" "$DATA_DIR/current.db"; exec env DB_PATH="$db" /home/inform/plc-data-to-grafana/.venv/bin/python collect.py >> "$DATA_DIR/log_$ts.txt" 2>&1'
 UMask=0027
 Restart=always
 RestartSec=5
